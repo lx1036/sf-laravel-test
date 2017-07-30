@@ -16,3 +16,16 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
+Route::group(['prefix' => 'v1'], function () {
+    $resources = [
+        'accounts' => [\App\Http\Controllers\AccountController::class => ['index', 'show']],
+    ];
+
+    foreach ($resources as $name => $controllers) {
+        foreach ($controllers as $fqcn => $actions) {
+            Route::resource($name, $fqcn, ['only' => $actions]);
+        }
+    }
+});

@@ -1,0 +1,24 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Feature;
+
+use Illuminate\Http\Request;
+
+class AccountControllerTest extends TestCase
+{
+    public function testIndex()
+    {
+        $response = $this->call(Request::METHOD_GET, 'api/v1/accounts');
+
+        dump($response->json());
+    }
+
+    public function testShow()
+    {
+        $response = $this->call(Request::METHOD_GET, 'api/v1/accounts/1');
+
+        dump($response->json());
+    }
+}
