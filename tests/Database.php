@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests;
 
 use PDO;
@@ -11,9 +13,9 @@ use PDO;
  * 2) Initialize the database schemas using SQL file specified by constant SQL_PATH
  * 3) Remove orphan test databases
  */
-abstract class Database
+class Database
 {
-    /** @var  \Tests\Database singleton to drop test database in destructor */
+    /** @var \Tests\Database singleton to drop test database in destructor */
     protected static $instance;
 
     /** @var string */
@@ -49,22 +51,56 @@ abstract class Database
 
         $db_name = $prefix . '_' . date('ymd') . '_' . str_random();
 
-        $pdo = new PDO('mysql:host=' . $host . ';'  . 'dbname=' . $db_name, $username, $password);
+        $pdo = new PDO('mysql:host=' . $host, $username, $password);
+
+        // Remove orphan database
+        static::removeOrphans($pdo, $prefix);
 
         // Create random database
         $pdo->exec('CREATE DATABASE `' . $db_name . '` DEFAULT CHARACTER SET ' . $charset . ' COLLATE ' . $collation);
-        $pdo->exec('USE DATABASE `' . $db_name . '`');
+        $pdo->exec('USE `' . $db_name . '`');
 
         // Create tables in specified random database
         $schema_file = __DIR__ . '/../database/seeds/mysql.sql';
-        $pdo->exec(file_get_contents($schema_file));
+
+        if ($pdo->exec(file_get_contents($schema_file)) === false) {
+            throw new \ErrorException('Cannot create tables by sql file: ' . $schema_file . ' because of ' . $pdo->errorInfo()[2]);
+        }
+
+        /*
+        // Check if tables are inserted.
+        $result = $pdo->query("SHOW TABLES")->fetchAll(PDO::FETCH_NUM);
+        dump($result);*/
 
         static::$instance = new static($db_name);
         static::$host     = $host;
         static::$username = $username;
         static::$password = $password;
 
+        dump($db_name);
+
         return $db_name;
+    }
+
+    /**
+     * Remove orphan database if exists.
+     *
+     * @param PDO $pdo
+     * @param string $prefix
+     */
+    public static function removeOrphans(PDO $pdo, string $prefix)
+    {
+        $databases = $pdo->query('SHOW DATABASES LIKE "' . $prefix . '%"')->fetchAll();
+
+        foreach ($databases as $database) {
+            $database = reset($database);
+
+            if (starts_with($database, $prefix) && is_numeric(explode('_', $database)[1])) {
+                $pdo->exec('DROP DATABASE `' . $database . '`');
+
+                echo 'Drop database ' . $database . PHP_EOL;
+            }
+        }
     }
 
     /**
