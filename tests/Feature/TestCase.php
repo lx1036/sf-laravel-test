@@ -10,12 +10,14 @@ use Tests\TestCase as BaseTestCase;
 
 class TestCase extends BaseTestCase
 {
+    protected const TEST_NAMESPACE = __NAMESPACE__;
+
     protected const MOCK_PATH = 'tests/fixtures/simple_dataset/vendor'; // tests/fixtures/{$dataset_name}/{$vendor_name}
 
     public function setUp()
     {
         parent::setUp();
-    
+
         /** @see http://docs.mockery.io/en/latest/cookbook/mocking_hard_dependencies.html?highlight=overload */
         $mock      = \Mockery::mock('overload:' . Connector::class); // Mock hard dependencies
         $mock_path = base_path(static::MOCK_PATH);

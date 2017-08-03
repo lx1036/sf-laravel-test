@@ -1,0 +1,18 @@
+[
+    [
+        {
+            "id": 1,
+            "user_id": 1,
+            "name": "First Account",
+            "type": "bank",
+            "number": "U10001"
+        },
+        {
+            "id": 2,
+            "user_id": 1,
+            "name": "Second Account",
+            "type": "investment",
+            "number": "U10002"
+        }
+    ]
+]
