@@ -77,8 +77,6 @@ class Database
         static::$username = $username;
         static::$password = $password;
 
-        dump($db_name);
-
         return $db_name;
     }
 

@@ -15,7 +15,7 @@ class TestCase extends BaseTestCase
     public function setUp()
     {
         parent::setUp();
-    
+
         /** @see http://docs.mockery.io/en/latest/cookbook/mocking_hard_dependencies.html?highlight=overload */
         $mock      = \Mockery::mock('overload:' . Connector::class); // Mock hard dependencies
         $mock_path = base_path(static::MOCK_PATH);

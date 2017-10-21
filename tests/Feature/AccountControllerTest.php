@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use Illuminate\Http\Request;
+use Tests\AssertApiBaseline;
 
-class AccountControllerTest extends TestCase
+final class AccountControllerTest extends TestCase
 {
+    use AssertApiBaseline;
+
+    protected const ROUTE_NAME = 'accounts';
+
     public function testIndex()
     {
-        $response = $this->call(Request::METHOD_GET, 'api/v1/accounts');
-
-        dump($response->json());
+        $this->assertApiIndex();
     }
 
     public function testShow()
     {
-        $response = $this->call(Request::METHOD_GET, 'api/v1/accounts/1');
-
-        dump($response->json());
+        $this->assertApiShow(1);
     }
 }
